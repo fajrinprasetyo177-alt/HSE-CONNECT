@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HSE Connect - Sistem Manajemen Alur K3 Terintegrasi</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .disabled-btn { opacity: 0.4; cursor: not-allowed !important; pointer-events: none; }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans min-h-screen pb-16 text-slate-800">
+
+    <nav class="bg-slate-900 text-white shadow-lg sticky top-0 z-50 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-emerald-500 p-2.5 rounded-xl shadow-md shadow-emerald-900/30">
+                    <i class="fa-solid fa-helmet-safety text-2xl text-slate-950"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-black tracking-wider block">HSE CONNECT</span>
+                    <span class="text-xs text-emerald-400 font-bold tracking-widest uppercase">Workflow Management System v2.0</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button onclick="resetSimulasi()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold py-2 px-3 rounded-lg border border-slate-700 transition-all cursor-pointer">
+                    <i class="fa-solid fa-rotate-left mr-1.5"></i> Reset Simulasi
+                </button>
+                <div class="text-xs font-semibold text-slate-400 bg-slate-950 px-4 py-2.5 rounded-lg border border-slate-800 hidden sm:block">
+                    <span class="w-2 h-2 inline-block bg-emerald-500 rounded-full mr-2 animate-pulse"></span> Server: <span class="font-bold text-slate-200">Online 2026</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="lg:col-span-1 space-y-6">
+            
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 transition-all" id="form-container">
+                <div class="flex items-center space-x-3 border-b border-slate-100 pb-4 mb-4">
+                    <span class="bg-blue-600 text-white font-black w-7 h-7 rounded-lg flex items-center justify-center text-sm shadow-xs">1</span>
+                    <div>
+                        <h2 class="font-extrabold text-slate-900 text-base">Pelaporan Lapangan</h2>
+                        <p class="text-[11px] text-slate-400">Diisi oleh pekerja/saksi penemu masalah</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-4 text-sm">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1.5 tracking-wider">Judul Temuan Masalah / Hazard</label>
+                        <select id="form-judul" class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 font-medium focus:outline-none focus:border-blue-500 focus:bg-white transition-all">
+                            <option value="Kabel Tegangan Tinggi Terkelupas">Kabel Tegangan Tinggi Terkelupas</option>
+                            <option value="Lantai Licin Dekat Tangki Kimia Gudang B">Lantai Licin Dekat Tangki Kimia Gudang B</option>
+                            <option value="Tabung APAR Zona Produksi C Kedaluwarsa">Tabung APAR Zona Produksi C Kedaluwarsa</option>
+                            <option value="Pekerja Scaffolding Mengabaikan Full Body Harness">Pekerja Scaffolding Mengabaikan Safety Harness</option>
+                            <option value="Kebocoran Pelumas Cair di Jalur Forklift">Kebocoran Pelumas Cair di Jalur Forklift</option>
+                        </select>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1.5 tracking-wider">Kategori K3</label>
+                            <select id="form-kategori" class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 font-medium focus:outline-none focus:border-blue-500 focus:bg-white transition-all">
+                                <option value="Hazard">Hazard</option>
+                                <option value="Near Miss">Near Miss</option>
+                                <option value="Unsafe Action">Unsafe Action</option>
+                                <option value="Unsafe Condition">Unsafe Condition</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1.5 tracking-wider">Tingkat Risiko Awal</label>
+                            <select id="form-risiko" class="w-full p-3 border border-slate-300 rounded-xl bg-slate-50 font-medium focus:outline-none focus:border-blue-500 focus:bg-white transition-all">
+                                <option value="LOW">LOW</option>
+                                <option value="MEDIUM" selected>MEDIUM</option>
+                                <option value="HIGH">HIGH</option>
+                                <option value="CRITICAL">CRITICAL</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1.5 tracking-wider">Lokasi Area Spesifik</label>
+                        <input type="text" id="form-lokasi" value="Workshop Fabrication Lt. 1 Zona Timur" class="w-full p-3 border border-slate-300 rounded-xl font-medium focus:outline-none focus:border-blue-500 transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1.5 tracking-wider">Lampirkan Bukti Temuan (Sebelum)</label>
+                        <input type="file" id="form-foto-hazard" accept="image/*" onchange="prosesUnggahGambar(this, 'preview-hazard-container', 'img-preview-hazard', 'hazard')" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer border border-slate-200 p-2 rounded-xl bg-slate-50">
+                        <div id="preview-hazard-container" class="hidden mt-2 border border-slate-200 rounded-xl overflow-hidden bg-slate-950 max-h-32 flex justify-center items-center">
+                            <img id="img-preview-hazard" src="" class="max-h-32 object-contain p-1">
+                        </div>
+                    </div>
+
+                    <button id="btn-submit-laporan" onclick="submitLaporan()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md shadow-blue-200 cursor-pointer flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-paper-plane shadow-xs"></i> <span>Kirim Laporan Ke HSE</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-5">
+                <div class="flex items-center space-x-3 border-b border-slate-100 pb-4">
+                    <span class="bg-slate-900 text-white font-black w-7 h-7 rounded-lg flex items-center justify-center text-sm shadow-xs"><i class="fa-solid fa-sliders text-xs"></i></span>
+                    <div>
+                        <h2 class="font-extrabold text-slate-900 text-base">Panel Validasi Berjenjang</h2>
+                        <p class="text-[11px] text-slate-400">Simulasi hak akses otorisasi peninjau</p>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3 shadow-2xs" id="panel-hse-verify">
+                    <span class="text-xs font-black text-slate-700 uppercase tracking-wider block border-b border-slate-200 pb-2"><i class="fa-solid fa-user-shield text-emerald-600 mr-1.5"></i> 1. Verifikasi Admin HSE</span>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button id="btn-hse-terima" onclick="hseVerify(true)" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-3 px-2 rounded-lg transition-all cursor-pointer disabled-btn shadow-2xs">
+                            <i class="fa-solid fa-circle-check mr-1"></i> Nyatakan Valid
+                        </button>
+                        <button id="btn-hse-tolak" onclick="hseVerify(false)" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold py-3 px-2 rounded-lg transition-all cursor-pointer disabled-btn shadow-2xs">
+                            <i class="fa-solid fa-circle-xmark mr-1"></i> Tolak Mentah
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3 shadow-2xs" id="panel-pic-action">
+                    <span class="text-xs font-black text-slate-700 uppercase tracking-wider block border-b border-slate-200 pb-2"><i class="fa-solid fa-users-gear text-orange-500 mr-1.5"></i> 2. Tindakan Lapangan (PIC)</span>
+                    
+                    <div class="space-y-1.5 mb-2">
+                        <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider">Unggah Bukti Hasil Penanganan (Sesudah)</label>
+                        <input type="file" id="form-foto-perbaikan" accept="image/*" disabled onchange="prosesUnggahGambar(this, 'preview-perbaikan-container', 'img-preview-perbaikan', 'perbaikan')" class="w-full text-[11px] text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 cursor-pointer border border-slate-200 p-1 rounded-lg bg-white disabled-btn">
+                        <div id="preview-perbaikan-container" class="hidden mt-2 border border-slate-200 rounded-xl overflow-hidden bg-slate-950 max-h-32 flex justify-center items-center">
+                            <img id="img-preview-perbaikan" src="" class="max-h-32 object-contain p-1">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <button id="btn-pic-mulai" onclick="picAction(1)" class="bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-3 px-2 rounded-lg transition-all cursor-pointer disabled-btn shadow-2xs">
+                            <i class="fa-solid fa-hammer mr-1"></i> Ambil Alih & Kerja
+                        </button>
+                        <button id="btn-pic-selesai" onclick="picAction(2)" class="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold py-3 px-2 rounded-lg transition-all cursor-pointer disabled-btn shadow-2xs">
+                            <i class="fa-solid fa-circle-arrow-up mr-1"></i> Ajukan Review
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3 shadow-2xs" id="panel-hse-final">
+                    <span class="text-xs font-black text-slate-700 uppercase tracking-wider block border-b border-slate-200 pb-2"><i class="fa-solid fa-clipboard-check text-slate-900 mr-1.5"></i> 3. Audit Penutupan Case (HSE)</span>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button id="btn-final-approve" onclick="hseFinalReview(true)" class="bg-slate-900 hover:bg-slate-950 text-white text-xs font-bold py-3 px-2 rounded-lg transition-all cursor-pointer disabled-btn border border-slate-950 shadow-2xs">
+                            <i class="fa-solid fa-check-double text-emerald-400 mr-1"></i> Sahkan & Tutup
+                        </button>
+                        <button id="btn-final-reject" onclick="hseFinalReview(false)" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold py-3 px-2 rounded-lg transition-all cursor-pointer disabled-btn shadow-2xs">
+                            <i class="fa-solid fa-triangle-exclamation mr-1"></i> Tolak / Revisi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2 space-y-6">
+            
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-start border-b border-slate-100 pb-5 mb-5 gap-4">
+                    <div>
+                        <span id="meta-tag-kategori" class="bg-blue-100 text-blue-800 text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider">HAZARD LOG</span>
+                        <h2 class="text-xl font-black text-slate-900 mt-1" id="lbl-judul">Kabel Tegangan Tinggi Terkelupas</h2>
+                        <p class="text-xs text-slate-500 mt-2 font-medium">
+                            <i class="fa-solid fa-location-dot text-rose-500 mr-1"></i> Area: <span id="lbl-lokasi" class="text-slate-800 font-bold">Workshop Fabrication Lt. 1 Zona Timur</span> 
+                        </p>
+                    </div>
+                    <div id="badge-status" class="px-4 py-2.5 rounded-xl text-xs font-extrabold flex items-center bg-slate-100 text-slate-700 border border-slate-200 shadow-3xs self-start gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span> BELUM ADA LAPORAN AKTIF
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                    <div class="border border-slate-200 rounded-xl p-3 bg-slate-50/70 text-center relative">
+                        <span class="text-[11px] font-extrabold text-slate-500 uppercase block mb-2"><i class="fa-solid fa-eye-dropper text-rose-500 mr-1.5"></i> Bukti Kondisi (Sebelum)</span>
+                        <div class="h-44 flex items-center justify-center bg-white rounded-lg border border-dashed border-slate-200 overflow-hidden relative group">
+                            <img id="display-foto-sebelum" src="" class="hidden max-h-full max-w-full object-contain">
+                            <div id="no-foto-sebelum" class="text-xs text-slate-400 font-medium flex flex-col items-center"><i class="fa-solid fa-image text-slate-300 text-2xl mb-1"></i>Belum ada unggahan foto</div>
+                        </div>
+                    </div>
+                    <div class="border border-slate-200 rounded-xl p-3 bg-slate-50/70 text-center relative">
+                        <span class="text-[11px] font-extrabold text-slate-500 uppercase block mb-2"><i class="fa-solid fa-circle-check text-emerald-500 mr-1.5"></i> Hasil Penanganan (Sesudah)</span>
+                        <div class="h-44 flex items-center justify-center bg-white rounded-lg border border-dashed border-slate-200 overflow-hidden relative group">
+                            <img id="display-foto-sesudah" src="" class="hidden max-h-full max-w-full object-contain">
+                            <div id="no-foto-sesudah" class="text-xs text-slate-400 font-medium flex flex-col items-center"><i class="fa-solid fa-image-slash text-slate-300 text-2xl mb-1"></i>Menunggu pengerjaan unit</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 text-slate-100 border-l-4 border-emerald-500 p-4 rounded-r-xl mb-6 shadow-xs">
+                    <span class="text-[10px] font-bold text-emerald-400 block uppercase tracking-widest"><i class="fa-solid fa-terminal mr-1.5"></i> Status Engine Log:</span>
+                    <p id="lbl-keterangan" class="text-sm mt-1 font-medium text-slate-300 italic">Sistem standby. Harap isi data laporan di sebelah kiri dan klik kirim untuk memulai simulasi alur K3.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-5 rounded-xl border border-slate-200 text-xs shadow-2xs" id="box-meta">
+                    <div class="space-y-3">
+                        <div>
+                            <span class="text-slate-400 block font-bold uppercase tracking-wider text-[10px] mb-0.5">Risk Assesment Level:</span> 
+                            <span id="meta-risiko" class="font-bold text-slate-800 text-sm">-</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block font-bold uppercase tracking-wider text-[10px] mb-0.5">Penanggung Jawab Penugasan (PIC):</span> 
+                            <span id="meta-pic" class="font-bold text-slate-800 text-sm">-</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block font-bold uppercase tracking-wider text-[10px] mb-1">Arahan Instruksi Keselamatan (HSE):</span> 
+                            <span id="meta-catatan-hse" class="font-medium text-slate-600 bg-white p-2.5 rounded-lg border border-slate-200 block italic leading-relaxed shadow-3xs">-</span>
+                        </div>
+                    </div>
+                    <div class="space-y-3 md:border-l border-slate-200 md:pl-6">
+                        <div>
+                            <span class="text-slate-400 block font-bold uppercase tracking-wider text-[10px] mb-0.5">Batas Penyelesaian (Target Deadline):</span> 
+                            <span id="meta-deadline" class="font-bold text-slate-800 text-sm">-</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block font-bold uppercase tracking-wider text-[10px] mb-0.5">Indikator Progres Kerja Lapangan:</span> 
+                            <span id="meta-progress" class="font-bold text-slate-800 text-sm">-</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block font-bold uppercase tracking-wider text-[10px] mb-1">Catatan Penyelesaian oleh Lapangan:</span> 
+                            <span id="meta-catatan-pic" class="font-medium text-slate-600 bg-white p-2.5 rounded-lg border border-slate-200 block italic leading-relaxed shadow-3xs">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white rounded-xl border border-slate-200 p-4 flex flex-col shadow-2xs">
+                    <div class="flex items-center space-x-2 border-b border-slate-100 pb-2.5 mb-3">
+                        <i class="fa-solid fa-users text-blue-500 text-xs"></i>
+                        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Terminal Pelapor</h3>
+                    </div>
+                    <div class="flex-grow flex items-center justify-center p-3 bg-slate-50 rounded-xl border border-dashed border-slate-200 text-center">
+                        <p id="notif-pekerja" class="text-xs text-slate-400 italic">Standby</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-slate-200 p-4 flex flex-col shadow-2xs">
+                    <div class="flex items-center space-x-2 border-b border-slate-100 pb-2.5 mb-3">
+                        <i class="fa-solid fa-tower-broadcast text-emerald-600 text-xs"></i>
+                        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">HSE Control Desk</h3>
+                    </div>
+                    <div class="flex-grow flex items-center justify-center p-3 bg-slate-50 rounded-xl border border-dashed border-slate-200 text-center">
+                        <p id="notif-hse" class="text-xs text-slate-400 italic">Mendengarkan jaringan...</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-slate-200 p-4 flex flex-col shadow-2xs">
+                    <div class="flex items-center space-x-2 border-b border-slate-100 pb-2.5 mb-3">
+                        <i class="fa-solid fa-toolbox text-orange-500 text-xs"></i>
+                        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">PIC Terminal Kerja</h3>
+                    </div>
+                    <div class="flex-grow flex items-center justify-center p-3 bg-slate-50 rounded-xl border border-dashed border-slate-200 text-center">
+                        <p id="notif-pic" class="text-xs text-slate-400 italic">Belum ada perintah kerja</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
+                <h3 class="text-xs font-bold text-slate-700 uppercase tracking-widest mb-4 border-b border-slate-100 pb-2.5"><i class="fa-solid fa-diagram-project mr-1.5 text-slate-400"></i> Diagram Alur Sistem Terikat (State Trace)</h3>
+                <div class="flex flex-wrap items-center justify-center gap-2 text-[10px] font-black text-center">
+                    <div id="flow-1" class="px-2.5 py-2 rounded-lg bg-slate-100 text-slate-400 border border-slate-200">1. Draft / Ajuan</div>
+                    <i class="fa-solid fa-angle-right text-slate-300"></i>
+                    <div id="flow-2" class="px-2.5 py-2 rounded-lg bg-slate-100 text-slate-400 border border-slate-200">2. Valid Admin</div>
+                    <i class="fa-solid fa-angle-right text-slate-300"></i>
+                    <div id="flow-3" class="px-2.5 py-2 rounded-lg bg-slate-100 text-slate-400 border border-slate-200">3. Penanganan</div>
+                    <i class="fa-solid fa-angle-right text-slate-300"></i>
+                    <div id="flow-4" class="px-2.5 py-2 rounded-lg bg-slate-100 text-slate-400 border border-slate-200">4. Audit Selesai</div>
+                    <i class="fa-solid fa-angle-right text-slate-300"></i>
+                    <div id="flow-5" class="px-2.5 py-2 rounded-lg bg-slate-100 text-slate-400 border border-slate-200">5. Case Closed</div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

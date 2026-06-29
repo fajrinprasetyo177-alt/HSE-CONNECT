@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HSE Connect - Sistem Pelaporan Hazard & K3</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 font-sans min-height-screen pb-12">
+
+    <nav class="bg-slate-900 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-emerald-500 p-2 rounded-lg">
+                    <i class="fa-solid fa-helmet-safety text-xl text-slate-950"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-bold tracking-wider block">HSE CONNECT</span>
+                    <span class="text-xs text-emerald-400">Safety & Hazard Reporting System</span>
+                </div>
+            </div>
+            <div class="text-sm text-gray-400">
+                <i class="fa-regular fa-calendar-days mr-1"></i> <span id="current-date">29 Juni 2026</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <div class="lg:col-span-1 space-y-6">
+            
+            <div class="bg-white rounded-xl shadow-xs border border-gray-200 p-5">
+                <div class="flex items-center space-x-2 border-b border-gray-100 pb-3 mb-4">
+                    <span class="bg-blue-100 text-blue-600 font-bold w-6 h-6 rounded-full flex items-center justify-center text-xs">1</span>
+                    <h2 class="font-bold text-gray-800">Form Pekerja (Temukan Hazard)</h2>
+                </div>
+                <div class="space-y-3 text-sm">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Contoh Kasus / Judul Laporan</label>
+                        <select id="form-judul" class="w-full p-2 border border-gray-300 rounded-lg bg-gray-50">
+                            <option value="Kabel Terkelupas di Area Produksi">Kabel Terkelupas di Area Produksi</option>
+                            <option value="Lantai Licin Dekat Tangki Gudang B">Lantai Licin Dekat Tangki Gudang B</option>
+                            <option value="APAR Gedung C Kedaluwarsa">APAR Gedung C Kedaluwarsa</option>
+                            <option value="Pekerja Proyek Tidak Menggunakan Helm">APD Tidak Digunakan (No Helmet)</option>
+                            <option value="Tumpahan Oli di Workshop Maintenance">Tumpahan Oli di Workshop Maintenance</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Jenis Kategori K3</label>
+                        <select id="form-kategori" class="w-full p-2 border border-gray-300 rounded-lg bg-gray-50">
+                            <option value="Hazard">Hazard</option>
+                            <option value="Near Miss">Near Miss</option>
+                            <option value="Unsafe Action">Unsafe Action</option>
+                            <option value="Unsafe Condition">Unsafe Condition</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Lokasi Kejadian</label>
+                        <input type="text" id="form-lokasi" value="Gedung Workshop Lt. 1" class="w-full p-2 border border-gray-300 rounded-lg">
+                    </div>
+                    <button onclick="submitLaporan()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition text-xs">
+                        <i class="fa-paper-plane mr-1"></i> Klik Kirim Laporan
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-xs border border-gray-200 p-5 space-y-4">
+                <div class="flex items-center space-x-2 border-b border-gray-100 pb-3">
+                    <span class="bg-amber-100 text-amber-700 font-bold w-6 h-6 rounded-full flex items-center justify-center text-xs"><i class="fa-solid fa-sliders"></i></span>
+                    <h2 class="font-bold text-gray-800">Panel Interaksi & Validasi</h2>
+                </div>
+
+                <div class="p-3 bg-gray-50 rounded-lg border border-gray-200 space-y-2">
+                    <span class="text-xs font-bold text-slate-700 uppercase tracking-wider block border-b border-gray-200 pb-1">Review Tim HSE</span>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="hseVerify(true)" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-2 px-3 rounded-md font-medium transition">
+                            <i class="fa-check mr-1"></i> Valid (Verifikasi)
+                        </button>
+                        <button onclick="hseVerify(false)" class="bg-rose-600 hover:bg-rose-700 text-white text-xs py-2 px-3 rounded-md font-medium transition">
+                            <i class="fa-xmark mr-1"></i> Tolak Laporan
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 mt-2">
+                        <button onclick="hseFinalReview(true)" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs py-2 px-3 rounded-md font-medium transition col-span-1">
+                            <i class="fa-square-check mr-1"></i> Approve Selesai
+                        </button>
+                        <button onclick="hseFinalReview(false)" class="bg-amber-600 hover:bg-amber-700 text-white text-xs py-2 px-3 rounded-md font-medium transition col-span-1">
+                            <i class="fa-rotate-left mr-1"></i> Tolak / Revisi PIC
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-gray-50 rounded-lg border border-gray-200 space-y-2">
+                    <span class="text-xs font-bold text-slate-700 uppercase tracking-wider block border-b border-gray-200 pb-1">Aksi Lapangan PIC (Maintenance)</span>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="picAction(1)" class="bg-orange-500 hover:bg-orange-600 text-white text-xs py-2 px-2 rounded-md font-medium transition">
+                            <i class="fa-screwdriver-wrench mr-1"></i> Mulai Kerjakan
+                        </button>
+                        <button onclick="picAction(2)" class="bg-purple-600 hover:bg-purple-700 text-white text-xs py-2 px-2 rounded-md font-medium transition">
+                            <i class="fa-cloud-arrow-up mr-1"></i> Ajukan Selesai
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="lg:col-span-2 space-y-6">
+            
+            <div class="bg-white rounded-xl shadow-xs border border-gray-200 p-6">
+                <div class="flex justify-between items-start border-b border-gray-100 pb-4 mb-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-800" id="lbl-judul">Kabel Terkelupas di Area Produksi</h2>
+                        <p class="text-xs text-gray-500 mt-1">Lokasi: <span id="lbl-lokasi" class="font-medium text-gray-700">Gedung Workshop Lt. 1</span> | Kategori: <span id="lbl-kategori" class="font-medium text-gray-700">Hazard</span></p>
+                    </div>
+                    <div id="badge-status" class="px-3 py-1.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Menunggu Verifikasi HSE
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 border-l-4 border-slate-400 p-4 rounded-r-lg mb-6">
+                    <span class="text-xs font-bold text-gray-500 block uppercase tracking-wider">Keterangan Sistem:</span>
+                    <p id="lbl-keterangan" class="text-sm text-gray-700 mt-1 italic">Laporan Anda telah berhasil dikirim dan sedang menunggu verifikasi dari Tim HSE.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs bg-gray-50 p-4 rounded-xl border border-gray-100" id="box-meta">
+                    <div class="space-y-2">
+                        <div><span class="text-gray-500 block">Level Risiko K3:</span> <span id="meta-risiko" class="font-semibold text-gray-800">-</span></div>
+                        <div><span class="text-gray-500 block">Penanggung Jawab (PIC):</span> <span id="meta-pic" class="font-semibold text-gray-800">-</span></div>
+                        <div><span class="text-gray-500 block">Catatan Tim HSE:</span> <span id="meta-catatan-hse" class="font-semibold text-gray-700 italic">-</span></div>
+                    </div>
+                    <div class="space-y-2 border-t md:border-t-0 md:border-l border-gray-200 pt-2 md:pt-0 md:pl-4">
+                        <div><span class="text-gray-500 block">Estimasi Deadline Kerja:</span> <span id="meta-deadline" class="font-semibold text-gray-800">-</span></div>
+                        <div><span class="text-gray-500 block">Progress Penanganan Field:</span> <span id="meta-progress" class="font-semibold text-gray-800">-</span></div>
+                        <div><span class="text-gray-500 block">Keterangan Progress PIC:</span> <span id="meta-catatan-pic" class="font-semibold text-gray-700 italic">-</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                
+                <div class="bg-white rounded-xl shadow-xs border border-gray-200 p-4 flex flex-col">
+                    <div class="flex items-center space-x-2 border-b border-gray-100 pb-2 mb-3">
+                        <i class="fa-solid fa-user text-blue-500"></i>
+                        <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Inbox Pekerja</h3>
+                    </div>
+                    <div class="flex-grow flex items-center justify-center p-4 bg-gray-50 rounded-lg border border-dashed border-gray-200 text-center">
+                        <p id="notif-pekerja" class="text-xs text-gray-600 font-medium"><i class="fa-check-circle text-emerald-500 block text-lg mb-1"></i> Laporan berhasil dikirim.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-xs border border-gray-200 p-4 flex flex-col">
+                    <div class="flex items-center space-x-2 border-b border-gray-100 pb-2 mb-3">
+                        <i class="fa-solid fa-shield-halved text-emerald-600"></i>
+                        <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Inbox HSE Control</h3>
+                    </div>
+                    <div class="flex-grow flex items-center justify-center p-4 bg-gray-50 rounded-lg border border-dashed border-gray-200 text-center">
+                        <p id="notif-hse" class="text-xs text-gray-600 font-medium"><i class="fa-envelope text-blue-500 block text-lg mb-1"></i> Laporan baru masuk.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-xs border border-gray-200 p-4 flex flex-col">
+                    <div class="flex items-center space-x-2 border-b border-gray-100 pb-2 mb-3">
+                        <i class="fa-solid fa-user-gear text-orange-500"></i>
+                        <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Inbox PIC Lapangan</h3>
+                    </div>
+                    <div class="flex-grow flex items-center justify-center p-4 bg-gray-50 rounded-lg border border-dashed border-gray-200 text-center">
+                        <p id="notif-pic" class="text-xs text-gray-400 italic">Belum ada penugasan kerja.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="bg-white rounded-xl shadow-xs border border-gray-200 p-5">
+                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-4 border-b border-gray-100 pb-2">Tracking Posisi Siklus Laporan</h3>
+                
+                <div class="flex flex-wrap items-center justify-center gap-2 text-xs font-semibold text-center">
+                    <div id="flow-1" class="px-2.5 py-1.5 rounded-md bg-amber-500 text-white shadow-xs border border-amber-600">Menunggu Verifikasi</div>
+                    <i class="fa-solid fa-arrow-right text-gray-300"></i>
+                    
+                    <div id="flow-2" class="px-2.5 py-1.5 rounded-md bg-gray-200 text-gray-500 border border-gray-300">Terverifikasi</div>
+                    <i class="fa-solid fa-arrow-right text-gray-300"></i>
+                    
+                    <div id="flow-3" class="px-2.5 py-1.5 rounded-md bg-gray-200 text-gray-500 border border-gray-300">Sedang Ditindaklanjuti</div>
+                    <i class="fa-solid fa-arrow-right text-gray-300"></i>
+                    
+                    <div id="flow-4" class="px-2.5 py-1.5 rounded-md bg-gray-200 text-gray-500 border border-gray-300">Menunggu Approve HSE</div>
+                    <i class="fa-solid fa-arrow-right text-gray-300"></i>
+
+                    <div id="flow-5" class="px-2.5 py-1.5 rounded-md bg-gray-200 text-gray-500 border border-gray-300">Selesai (Approved)</div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script>
+        // Inisialisasi awal objek data laporan
+        let laporan = {
+            judul: "Kabel Terkelupas di Area Produksi",
+            kategori: "Hazard",
+            lokasi: "Gedung Workshop Lt. 1",
+            status: 1 // 1: Menunggu, 2: Terverifikasi, 3: Ditindaklanjuti, 4: Menunggu Akhir, 5: Selesai, 0: Ditolak, -1: Revisi
+        };
+
+        // Fungsi Aksi 1: Kirim Laporan Baru oleh Pekerja
+        function submitLaporan() {
+            laporan.judul = document.getElementById('form-judul').value;
+            laporan.kategori = document.getElementById('form-kategori').value;
+            laporan.lokasi = document.getElementById('form-lokasi').value;
+            laporan.status = 1;
+
+            updateUI(
+                "🟡 Menunggu Verifikasi HSE",
+                "bg-amber-100 text-amber-800",
+                "bg-amber-500",
+                "Laporan Anda telah berhasil dikirim dan sedang menunggu verifikasi dari Tim HSE.",
+                1
+            );
+
+            // Reset Parameter Meta
+            document.getElementById('meta-risiko').innerText = "-";
+            document.getElementById('meta-pic').innerText = "-";
+            document.getElementById('meta-catatan-hse').innerText = "-";
+            document.getElementById('meta-deadline').innerText = "-";
+            document.getElementById('meta-progress').innerText = "-";
+            document.getElementById('meta-catatan-pic').innerText = "-";
+
+            // Notifikasi
+            document.getElementById('notif-pekerja').innerHTML = `<i class="fa-check-circle text-emerald-500 block text-lg mb-1"></i> Laporan berhasil dikirim.`;
+            document.getElementById('notif-hse').innerHTML = `<i class="fa-envelope text-blue-500 block text-lg mb-1"></i> Laporan baru masuk.`;
+            document.getElementById('notif-pic').innerHTML = `<span class="text-gray-400 italic">Belum ada penugasan kerja.</span>`;
+        }
+
+        // Fungsi Aksi 2: Validasi Review Awal oleh HSE
+        function hseVerify(isValid) {
+            if(laporan.status !== 1) {
+                alert("Aksi ini hanya valid untuk laporan berstatus 'Menunggu Verifikasi HSE'!");
+                return;
+            }
+
+            if(isValid) {
+                laporan.status = 2;
+                updateUI("🔵 Terverifikasi", "bg-blue-100 text-blue-800", "bg-blue-500", "Laporan telah diverifikasi oleh Tim HSE dan akan segera ditindaklanjuti.", 2);
+                
+                // Isi Parameter Kontrol HSE otomatis
+                document.getElementById('meta-risiko').innerHTML = `<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-xs font-bold">High</span>`;
+                document.getElementById('meta-pic').innerText = "Supervisor Maintenance";
+                document.getElementById('meta-deadline').innerText = "28 Juni 2026";
+                document.getElementById('meta-catatan-hse').innerText = "Segera lakukan isolasi area sebelum proses perbaikan.";
+
+                // Notifikasi Update
+                document.getElementById('notif-pekerja').innerHTML = `<i class="fa-circle-check text-blue-500 block text-lg mb-1"></i> Laporan telah diverifikasi.`;
+                document.getElementById('notif-hse').innerHTML = `<i class="fa-list-check text-gray-500 block text-lg mb-1"></i> Menunggu tindak lanjut PIC.`;
+                document.getElementById('notif-pic').innerHTML = `<i class="fa-bell text-amber-500 block text-lg mb-1"></i> <strong>Ada tugas baru dari HSE!</strong><br>Deadline: 28 Juni 2026.`;
+            } else {
+                laporan.status = 0;
+                updateUI("🔴 Laporan Ditolak", "bg-rose-100 text-rose-800", "bg-rose-500", "Laporan tidak dapat diproses karena data kurang lengkap atau bukan kategori K3.", 0);
+                document.getElementById('notif-pekerja').innerHTML = `<i class="fa-circle-xmark text-rose-500 block text-lg mb-1"></i> Laporan ditolak (Foto tidak jelas/Bukan HSE).`;
+            }
+        }
+
+        // Fungsi Aksi 3: Progress Lapangan oleh PIC (Supervisor)
+        function picAction(step) {
+            if(step === 1) { // Mulai Mengerjakan
+                if(laporan.status !== 2 && laporan.status !== -1) {
+                    alert("Tugas belum ditunjuk oleh HSE atau status tidak berada pada fase penugasan/revisi!");
+                    return;
+                }
+                laporan.status = 3;
+                updateUI("🟠 Sedang Ditindaklanjuti", "bg-orange-100 text-orange-800", "bg-orange-500", "Laporan sedang dalam proses penanganan oleh Supervisor Maintenance.", 3);
+                
+                document.getElementById('meta-progress').innerText = "40%";
+                document.getElementById('meta-catatan-pic').innerText = "Material pengganti sedang dipersiapkan.";
+
+                document.getElementById('notif-pekerja').innerHTML = `<i class="fa-triangle-exclamation text-orange-500 block text-lg mb-1"></i> Laporan sedang ditindaklanjuti.`;
+            } 
+            else if(step === 2) { // Ajukan Penyelesaian
+                if(laporan.status !== 3) {
+                    alert("Anda harus menekan tombol 'Mulai Kerjakan' terlebih dahulu!");
+                    return;
+                }
+                laporan.status = 4;
+                updateUI("🟣 Menunggu Persetujuan HSE", "bg-purple-100 text-purple-800", "bg-purple-500", "Perbaikan telah selesai dilakukan dan sedang menunggu verifikasi akhir dari Tim HSE di lapangan.", 4);
+                
+                document.getElementById('meta-progress').innerText = "100%";
+                document.getElementById('meta-catatan-pic').innerText = "Perbaikan selesai, mengajukan bukti foto sesudah pengerjaan.";
+
+                document.getElementById('notif-pekerja').innerHTML = `<i class="fa-hourglass-half text-purple-500 block text-lg mb-1"></i> Menunggu persetujuan HSE.`;
+                document.getElementById('notif-hse').innerHTML = `<i class="fa-camera text-purple-500 block text-lg mb-1"></i> PIC mengunggah bukti penyelesaian lapangan.`;
+            }
+        }
+
+        // Fungsi Aksi 4: Verifikasi Akhir/Lapangan oleh HSE
+        function hseFinalReview(isApproved) {
+            if(laporan.status !== 4) {
+                alert("Aksi ini hanya tersedia apabila PIC sudah mengajukan penyelesaian ('Menunggu Persetujuan HSE')!");
+                return;
+            }
+
+            if(isApproved) {
+                laporan.status = 5;
+                updateUI("🟢 Selesai (Approved)", "bg-emerald-100 text-emerald-800", "bg-emerald-500", "Perbaikan telah diverifikasi secara aktual di lapangan dan disetujui oleh Tim HSE. Laporan otomatis masuk ke arsip.", 5);
+                
+                document.getElementById('meta-catatan-hse').innerText = "Hazard telah diperbaiki sesuai standar K3 korporat.";
+
+                document.getElementById('notif-pekerja').innerHTML = `<i class="fa-trophy text-emerald-500 block text-lg mb-1"></i> 🎉 Laporan selesai. Terima kasih atas kepedulian Anda!`;
+                document.getElementById('notif-pic').innerHTML = `<i class="fa-square-check text-emerald-500 block text-lg mb-1"></i> Perbaikan disetujui oleh Tim HSE.`;
+                document.getElementById('notif-hse').innerHTML = `<i class="fa-box-archive text-gray-500 block text-lg mb-1"></i> Laporan diarsipkan.`;
+            } else {
+                laporan.status = -1;
+                updateUI("🔴 Revisi Perbaikan", "bg-rose-100 text-rose-800", "bg-rose-500", "Perbaikan belum memenuhi standar keselamatan HSE dan dikembalikan ke pihak rekanan/PIC.", 3);
+                
+                document.getElementById('meta-catatan-hse').innerText = "Isolasi kabel sudah dilakukan, namun pelindung eksternal belum dipasang.";
+
+                document.getElementById('notif-pic').innerHTML = `<i class="fa-circle-exclamation text-rose-500 block text-lg mb-1"></i> <strong>Perbaikan ditolak, perlu revisi ulang!</strong>`;
+                document.getElementById('notif-pekerja').innerHTML = `<i class="fa-rotate text-amber-500 block text-lg mb-1"></i> Dokumen dikembalikan ke status perbaikan ulang.`;
+            }
+        }
+
+        // Fungsi Pembantu: Sinkronisasi Teks & Warna State UI Komponen
+        function updateUI(statusText, badgeClass, dotClass, keterangan, flowStep) {
+            document.getElementById('lbl-judul').innerText = laporan.judul;
+            document.getElementById('lbl-lokasi').innerText = laporan.lokasi;
+            document.getElementById('lbl-kategori').innerText = laporan.kategori;
+
+            let badge = document.getElementById('badge-status');
+            badge.className = `px-3 py-1.5 rounded-full text-xs font-bold ${badgeClass} flex items-center gap-1.5`;
+            badge.innerHTML = `<span class="w-2 h-2 rounded-full ${dotClass} animate-pulse"></span> ${statusText}`;
+
+            document.getElementById('lbl-keterangan').innerText = keterangan;
+
+            // Reset Highlight Diagram Alur
+            for(let i=1; i<=5; i++) {
+                let el = document.getElementById(`flow-${i}`);
+                el.className = "px-2.5 py-1.5 rounded-md bg-gray-200 text-gray-500 border border-gray-300";
+            }
+            // Highlight step aktif
+            if(flowStep > 0) {
+                let activeEl = document.getElementById(`flow-${flowStep}`);
+                if(flowStep === 5) activeEl.className = "px-2.5 py-1.5 rounded-md bg-emerald-600 text-white shadow-xs border border-emerald-700";
+                else if(flowStep === 4) activeEl.className = "px-2.5 py-1.5 rounded-md bg-purple-600 text-white shadow-xs border border-purple-700";
+                else if(flowStep === 3) activeEl.className = "px-2.5 py-1.5 rounded-md bg-orange-500 text-white shadow-xs border border-orange-600";
+                else if(flowStep === 2) activeEl.className = "px-2.5 py-1.5 rounded-md bg-blue-600 text-white shadow-xs border border-blue-700";
+                else activeEl.className = "px-2.5 py-1.5 rounded-md bg-amber-500 text-white shadow-xs border border-amber-600";
+            }
+        }
+    </script>
+</body>
+</html>
